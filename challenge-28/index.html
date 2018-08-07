@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+
+<body>
+  <div>
+    <h3>Buscar CEP:</h3>
+    <form data-js="formCep">
+      <input type="text" data-js="inputCep" />
+      <button type="submit" data-js="btnSubmit">Enviar</button>
+    </form>
+  </div>
+
+  <div>
+    <h4 data-js="status"></h4>
+  </div>
+
+  <br/>
+
+  <div>
+    <table>
+      <tr>
+        <td>
+          <b>Logradouro:</b>
+        </td>
+        <td colspan="3" data-js="logradouro"></td>
+      </tr>
+      <tr>
+        <td>
+          <b>Bairro:</b>
+        </td>
+        <td data-js="bairro"></td>
+        <td>
+          <b>Cidade:</b>
+        </td>
+        <td data-js="cidade"></td>
+      </tr>
+      <tr>
+        <td>
+          <b>Estado:</b>
+        </td>
+        <td data-js="estado"></td>
+        <td>
+          <b>CEP:</b>
+        </td>
+        <td data-js="cep"></td>
+      </tr>
+    </table>
+  </div>
+
+  <script src="challenge-28.js"></script>
+</body>
+
+</html>
