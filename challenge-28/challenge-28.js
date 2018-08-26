@@ -1,4 +1,4 @@
-(function (win, doc) {
+(function (DOM) {
   'use strict';
   /*
   No HTML:
@@ -27,134 +27,99 @@
   - Utilize a lib DOM criada anteriormente para facilitar a manipulação e
   adicionar as informações em tela.
   */
-  //lib DOM
-  function DOM(nodes) {
-    this.element = doc.querySelectorAll(nodes);
-    this.on = function (event, callback) {
-      Array.prototype.forEach.call(this.get(), function (el) {
-        el.addEventListener(event, callback, false);
-      });
-    };
-    this.off = function (event, callback) {
-      Array.prototype.forEach.call(this.get(), function (el) {
-        el.removeEventListener(event, callback, false);
-      });
-    };
-    this.get = function () {
-      return this.element;
-    };
-    this.forEach = function () {
-      return Array.prototype.forEach.apply(this.get(), arguments);
-    };
-    this.map = function () {
-      return Array.prototype.map.apply(this.get(), arguments);
-    };
-    this.filter = function () {
-      return Array.prototype.filter.apply(this.get(), arguments);
-    };
-    this.reduce = function () {
-      return Array.prototype.reduce.apply(this.get(), arguments);
-    };
-    this.reduceRight = function () {
-      return Array.prototype.reduceRight.apply(this.get(), arguments);
-    };
-    this.every = function () {
-      return Array.prototype.every.apply(this.get(), arguments);
-    };
-    this.some = function () {
-      return Array.prototype.some.apply(this.get(), arguments);
-    };
-  }
 
-  //------------------
+  function app() {
+    var $formCep = new DOM('[data-js="formCep"]');
+    var $input = new DOM('[data-js="inputCep"]');
+    var $statusMessage = new DOM('[data-js="status"]');
+    var $logradouro = new DOM('[data-js="logradouro"]');
+    var $bairro = new DOM('[data-js="bairro"]');
+    var $cidade = new DOM('[data-js="cidade"]');
+    var $estado = new DOM('[data-js="estado"]');
+    var $cep = new DOM('[data-js="cep"]');
+    var xhr = new XMLHttpRequest();
+    $formCep.on('submit', handleSubmitForm);
 
-  var $formCep = new DOM('[data-js="formCep"]');
-  var $input = new DOM('[data-js="inputCep"]');
-
-  var $statusMessage = new DOM('[data-js="status"]');
-
-  var $logradouro = new DOM('[data-js="logradouro"]');
-  var $bairro = new DOM('[data-js="bairro"]');
-  var $cidade = new DOM('[data-js="cidade"]');
-  var $estado = new DOM('[data-js="estado"]');
-  var $cep = new DOM('[data-js="cep"]');
-
-  $formCep.on('submit', handleSubmitForm);
-  var xhr = new XMLHttpRequest();
-
-  function handleSubmitForm(e) {
-    e.preventDefault();
-    clearFields();
-    xhr.open('GET', getUrl());
-    xhr.send();
-    setMessage('loading');
-    xhr.addEventListener('readystatechange', handleReadyStateChange, false);
-    xhr.onerror = setMessage('error');
-  }
-
-  function handleReadyStateChange() {
-    if (isRequestOk()) {
-      setMessage('ok');
-      fillCepFields(xhr.responseText);
+    function handleSubmitForm(e) {
+      e.preventDefault();
+      clearFields();
+      xhr.open('GET', getUrl());
+      xhr.send();
+      setMessage('loading');
+      xhr.addEventListener('readystatechange', handleReadyStateChange, false);
+      xhr.onerror = setMessage('error');
     }
-    else {
-      setMessage('error');
+
+    function handleReadyStateChange() {
+      if (isRequestOk()) {
+        setMessage('ok');
+        fillCepFields(xhr.responseText);
+      }
+      else {
+        setMessage('error');
+      }
     }
-  }
 
-  function getUrl() {
-    return 'https://viacep.com.br/ws/[CEP]/json/'.replace('[CEP]', clearCep());
-  }
-
-  function clearCep() {
-    return $input.get()[0].value.replace(/\D/g, '');
-  }
-
-  function isRequestOk() {
-    return xhr.readyState === 4 && xhr.status === 200;
-  }
-
-  function setMessage(type) {
-    var messages = {
-      loading: `Buscando informações para o CEP ${$input.get()[0].value}...`,
-      ok: `Endereço referente ao CEP ${$input.get()[0].value}:`,
-      error: `Não encontramos o endereço para o CEP ${$input.get()[0].value}.`
+    function getUrl() {
+      return 'https://viacep.com.br/ws/[CEP]/json/'.replace('[CEP]', clearCep());
     }
-    $statusMessage.get()[0].textContent = messages[type];
-  }
 
-  function fillCepFields() {
-    var cepData = parseData();
-    if (!cepData) {
-      setMessage('error');
-      cepData = clearFields();
+    function clearCep() {
+      return $input.get()[0].value.replace(/\D/g, '');
     }
-    $logradouro.get()[0].textContent = cepData.logradouro;
-    $bairro.get()[0].textContent = cepData.bairro;
-    $cidade.get()[0].textContent = cepData.localidade;
-    $estado.get()[0].textContent = cepData.uf;
-    $cep.get()[0].textContent = cepData.cep;
-  }
 
-  function parseData() {
-    var result;
-    try {
-      result = JSON.parse(xhr.responseText);
+    function isRequestOk() {
+      return xhr.readyState === 4 && xhr.status === 200;
     }
-    catch (e) {
-      result = null;
-    }
-    return result;
-  }
 
-  function clearFields() {
+    function setMessage(type) {
+      var messages = {
+        loading: `Buscando informações para o CEP ${$input.get()[0].value}...`,
+        ok: `Endereço referente ao CEP ${$input.get()[0].value}:`,
+        error: `Não encontramos o endereço para o CEP ${$input.get()[0].value}.`
+      }
+      $statusMessage.get()[0].textContent = messages[type];
+    }
+
+    function fillCepFields() {
+      var cepData = parseData();
+      if (!cepData) {
+        setMessage('error');
+        cepData = clearFields();
+      }
+      $logradouro.get()[0].textContent = cepData.logradouro;
+      $bairro.get()[0].textContent = cepData.bairro;
+      $cidade.get()[0].textContent = cepData.localidade;
+      $estado.get()[0].textContent = cepData.uf;
+      $cep.get()[0].textContent = cepData.cep;
+    }
+
+    function parseData() {
+      var result;
+      try {
+        result = JSON.parse(xhr.responseText);
+      }
+      catch (e) {
+        result = null;
+      }
+      return result;
+    }
+
+    function clearFields() {
+      return {
+        logradouro: '',
+        bairro: '',
+        localidade: '',
+        uf: '',
+        cep: ''
+      }
+    }
+
     return {
-      logradouro: '',
-      bairro: '',
-      localidade: '',
-      uf: '',
-      cep: ''
-    }
+      setMessage: setMessage,
+      clearCep: clearCep
+    };
   }
 
-})(window, document);
+  window.app = app();
+})(window.DOM);
