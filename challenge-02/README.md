@@ -15,7 +15,7 @@ let total = sum(2, 3) + 5
 console.log(total)
 
 // Declare uma nova variável, sem valor.
-let new
+let newLet
 
 /*
 Crie uma função que adicione um valor à variável criada acima, e retorne a string:
@@ -23,8 +23,8 @@ Crie uma função que adicione um valor à variável criada acima, e retorne a s
 Onde VALOR é o novo valor da variável.
 */
 function add(value) {
-	new = value
-  return `O valor da variável agora é ${new}`
+	newLet = value
+  return `O valor da variável agora é ${newLet}`
 }
 
 // Invoque a função criada acima.
